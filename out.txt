@@ -1,0 +1,3 @@
+D:\WordCount\wc.c, 字符数：327
+D:\WordCount\wc.c, 单词数：26
+D:\WordCount\wc.c, 行数：22
