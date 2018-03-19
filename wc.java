@@ -60,24 +60,24 @@ public class wc {
             // 一次读一个字符
             reader = new InputStreamReader(new FileInputStream(file));
             int tempchar;
-            while ((tempchar = reader.read()) != -1) {
-            	if(((char)tempchar) != ' ' && ((char)tempchar) != ',' && ((char)tempchar) != '\r' && ((char)tempchar) != '\n') {
-            		break;
-            	}
-            }
-            while ((tempchar = reader.read()) != -1) {
+            for (int i = 1;(tempchar = reader.read()) != -1;i++) {
                 // 对于windows下，\r\n这两个字符在一起时，表示一个换行。
                 // 但如果这两个字符分开显示时，会换两次行。
                 // 因此，屏蔽掉\r，或者屏蔽\n。否则，将会多出很多空行。
             	word = 0;
                 while (((char) tempchar) == ' ' || ((char)tempchar) == ',' || ((char)tempchar) == '\r' ||((char)tempchar) == '\n') {
-                	word = 1;
-                    if((tempchar = reader.read()) != -1) {
-                    	continue;
-                    }
-                    else {
-                    	count--;
-                    }
+                	if(i==1) {
+                		break;
+                	}
+                	else {
+	                	word = 1;
+	                    if((tempchar = reader.read()) != -1) {
+	                    	continue;
+	                    }
+	                    else {
+	                    	count--;
+	                    }
+                	}
                 }
                 count += word;
             }
