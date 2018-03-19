@@ -61,6 +61,11 @@ public class wc {
             reader = new InputStreamReader(new FileInputStream(file));
             int tempchar;
             while ((tempchar = reader.read()) != -1) {
+            	if(((char)tempchar) != ' ' && ((char)tempchar) != ',' && ((char)tempchar) != '\r' && ((char)tempchar) != '\n') {
+            		break;
+            	}
+            }
+            while ((tempchar = reader.read()) != -1) {
                 // 对于windows下，\r\n这两个字符在一起时，表示一个换行。
                 // 但如果这两个字符分开显示时，会换两次行。
                 // 因此，屏蔽掉\r，或者屏蔽\n。否则，将会多出很多空行。
