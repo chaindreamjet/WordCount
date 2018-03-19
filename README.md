@@ -1,5 +1,4 @@
-# testing
-WordCount
+# WordCount
 
 2.1  WordCount需求说明
 WordCount的需求可以概括为：对程序设计语言源文件统计字符数、单词数、行数，统计结果以指定格式输出到默认文件中，以及其他扩展功能，并能够快速地处理多个文件。
