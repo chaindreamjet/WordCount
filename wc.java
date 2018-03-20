@@ -50,7 +50,7 @@ public class wc {
     }
 
     // -w
-    public static String fileWords(String fileName) {
+	public static String fileWords(String fileName) {
         File file = new File(fileName);
         String str = "";
         int count = 0;//统计单词数
@@ -61,12 +61,18 @@ public class wc {
             reader = new InputStreamReader(new FileInputStream(file));
             int tempchar;
             // i 在循环中计数，但实际上对控制循环无用。用来应对开头就是分隔符的情况
+            if((tempchar = reader.read()) == -1) {
+            	str = fileName + ",单词数：0";
+            	return str;
+            }
+            reader = new InputStreamReader(new FileInputStream(file));
             for (int i = 1;(tempchar = reader.read()) != -1;i++) {
             	//每次读新词，word置0
             	word = 0;
-                while (((char) tempchar) == ' ' || ((char)tempchar) == ',' || ((char)tempchar) == '\r' ||((char)tempchar) == '\n') {
+                while (((char) tempchar) == ' ' || ((char)tempchar) == ',' || ((char)tempchar) == '\r' ||((char)tempchar) == '\n' ||((char)tempchar) == '\t') {
                 	//如果i为1则说明是开头的分隔符，直接跳过
                 	if(i==1) {
+                		count--;
                 		break;
                 	}
                 	else {
@@ -74,9 +80,10 @@ public class wc {
 	                    if((tempchar = reader.read()) != -1) {
 	                    	continue;
 	                    }
-	                    //如果读到文件末尾了，即分隔符在文件末尾，则不需要做任何事情。不过由于这个外循环最后一步是count自增，所以我这里先减。到最后count再自增就行
+	                    //如果读到文件末尾了
 	                    else {
 	                    	count--;
+	                    	break;
 	                    }
                 	}
                 }
