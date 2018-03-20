@@ -29,6 +29,7 @@ public class wc {
                 // 对于windows下，\r\n这两个字符在一起时，表示一个换行。
                 // 但如果这两个字符分开显示时，会换两次行。
                 // 因此，屏蔽掉\r，或者屏蔽\n。否则，将会多出很多空行。
+            	// 此判断语句无需测试
                 if (((char) tempchar) != '\r') {
                     count++;
                 }
@@ -72,7 +73,7 @@ public class wc {
                 while (((char) tempchar) == ' ' || ((char)tempchar) == ',' || ((char)tempchar) == '\r' ||((char)tempchar) == '\n' ||((char)tempchar) == '\t') {
                 	//如果i为1则说明是开头的分隔符，直接跳过
                 	if(i==1) {
-                		count--;
+            		count--;
                 		break;
                 	}
                 	else {
@@ -167,6 +168,7 @@ public class wc {
             		continue;
             	}
             	int uselessChar = 0;//'{' '}' 的个数
+            	int useChar = 0;
             	//逐字符读
             	for(int i = 0;i<tempString.length();i++){
             		//读到 '{' '}'则uselessChar++
@@ -206,13 +208,12 @@ public class wc {
             		}
             		//如果都没读到上述字符，且不为空格，那么为有效字符，为代码行。
             		else if(tempString.charAt(i)!=' '){
-            			codeLine++;
-            			break;
+            			useChar++;
             		}
             		//如果读到行末了
             		if((i==tempString.length()-1)){
             			// '{' '}'个数小于2，为空行
-                		if(uselessChar<2) {
+                		if(uselessChar<2 && useChar <1) {
                 			blankLine++;
                 		}
                 		//2以上，代码行
@@ -376,14 +377,6 @@ public class wc {
     
     
     public static void main(String args[]){
-    	
-//    	Scanner scan = new Scanner(System.in);
-//    	ArrayList<String> s = new ArrayList<String>();
-//    	String next = scan.next();
-//    	while(!next.equals(".")){
-//    		s.add(next);
-//    		next = scan.next();
-//    	}
     	
     	//循环处理文件
     	String inpath = "";
