@@ -333,7 +333,12 @@ public class wc {
             				//比完把word置空
             				word = "";
             			}
-            			i++;
+            			if(i<whole.length()-1){
+            				i++;
+            			}
+            			else {
+            				break;
+            			}
             		}
             		//和读单词数中同样的道理
             		if(whole.charAt(i)!=' ' && whole.charAt(i)!='\r' && whole.charAt(i)!='\n' && whole.charAt(i)!='\t' && whole.charAt(i)!=',') {
@@ -342,7 +347,7 @@ public class wc {
             	}
             	count += hasword;
             }
-            str = infile + ", 单词数：" + ++count + "\r\n";
+            str = infile + ", 单词数：" + count + "\r\n";
             buttferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -454,6 +459,9 @@ public class wc {
     	if(func[6]){
 	       	outPut(output,outpath);
 	    }
+    	else {
+    		outPut(output,"result.txt");
+    	}
     	System.out.println(output);
     }
 }
