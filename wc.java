@@ -60,12 +60,12 @@ public class wc {
             // 一次读一个字符
             reader = new InputStreamReader(new FileInputStream(file));
             int tempchar;
+            // i 在循环中计数，但实际上对控制循环无用。用来应对开头就是分隔符的情况
             for (int i = 1;(tempchar = reader.read()) != -1;i++) {
-                // 对于windows下，\r\n这两个字符在一起时，表示一个换行。
-                // 但如果这两个字符分开显示时，会换两次行。
-                // 因此，屏蔽掉\r，或者屏蔽\n。否则，将会多出很多空行。
+            	//每次读新词，word置0
             	word = 0;
                 while (((char) tempchar) == ' ' || ((char)tempchar) == ',' || ((char)tempchar) == '\r' ||((char)tempchar) == '\n') {
+                	//如果i为1则说明是开头的分隔符，直接跳过
                 	if(i==1) {
                 		break;
                 	}
@@ -74,6 +74,7 @@ public class wc {
 	                    if((tempchar = reader.read()) != -1) {
 	                    	continue;
 	                    }
+	                    //如果读到文件末尾了，即分隔符在文件末尾，则不需要做任何事情。不过由于这个外循环最后一步是count自增，所以我这里先减。到最后count再自增就行
 	                    else {
 	                    	count--;
 	                    }
@@ -146,54 +147,68 @@ public class wc {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
-            String tempString = null;
+            String tempString = null;//当前读到的行
             int codeLine = 0;
             int blankLine = 0;
             int noteLine = 0;
             // 一次读入一行，直到读入null为文件结束
             while ((tempString = reader.readLine()) != null) {
+            	//读到的字符串长度小于1，为空行
             	if(tempString.length()<1)
             	{
             		blankLine++;
             		continue;
             	}
             	int uselessChar = 0;//'{' '}' 的个数
+            	//逐字符读
             	for(int i = 0;i<tempString.length();i++){
+            		//读到 '{' '}'则uselessChar++
             		if(tempString.charAt(i)=='{' || tempString.charAt(i)=='}'){
             			uselessChar++;
             		}
+            		//读到注释符
             		else if(tempString.charAt(i)=='/' && (tempString.charAt(i+1)=='/'||tempString.charAt(i+1)=='*')){
+            			//如果 '{' '}'个数小于2，则为注释行
             			if(uselessChar<2){
             				noteLine++;
             				break;
             			}
+            			//2以上为代码行
             			else {
             				codeLine++;
             				break;
             			}
             		}
+            		//读到注释右符
             		else if(tempString.charAt(i)=='*' && tempString.charAt(i+1)=='/') {
+            			//位于行末，注释行
             			if(i==(tempString.length()-2)) {
             				noteLine++;
             				break;
             			}
+            			//位于行末-1的位置且行末字符为'{' '}'，注释行
             			else if(i==(tempString.length()-3) && (tempString.charAt(i+2)=='{' || tempString.charAt(i+2)=='}')) {
             				noteLine++;
             				break;
             			}
+            			//否则代码行
             			else {
             				codeLine++;
             				break;
             			}
             		}
+            		//如果都没读到上述字符，且不为空格，那么为有效字符，为代码行。
             		else if(tempString.charAt(i)!=' '){
             			codeLine++;
             			break;
             		}
+            		//如果读到行末了
             		if((i==tempString.length()-1)){
+            			// '{' '}'个数小于2，为空行
                 		if(uselessChar<2) {
                 			blankLine++;
                 		}
+                		//2以上，代码行
                 		else {
                 			codeLine++;
                 		}
@@ -220,14 +235,14 @@ public class wc {
     	/*
     	 * 先把stopfile指定的文件的单词读到stopList里
     	 */
-    	String all = "";
-        String word = "";
+    	String all = "";//在读停用词表时，先把整个文件读到这个字符串里
+        String word = "";//读停用词表时，用来存当前读到的单词
 		List<String> stopList = new ArrayList<>();
 		BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(stopfile));
             String tempString = null;
-            // 一次读入一行，直到读入null为文件结束
+            // 一次读入一行，直到读入null为文件结束，读到all字符串里
             while ((tempString = reader.readLine()) != null) {
                 all = all + " " + tempString;
             }
@@ -243,7 +258,9 @@ public class wc {
             }
         }
         
+        //开始逐字符循环读停用词表
         for(int i = 0;i<all.length();i++) {
+        	//如果读到有效字符则加到word中
         	if(all.charAt(i)!=' ' && all.charAt(i)!='\r' && all.charAt(i)!='\n' && all.charAt(i)!='\t') {
         		word += all.charAt(i);
         	}
@@ -254,6 +271,7 @@ public class wc {
         		}
         	}
         }
+        //将word添加到stopList中
         stopList.add(word);
         
         /*
@@ -262,35 +280,41 @@ public class wc {
         File file = new File(infile);
         String str = "";
         word = "";
-        int hasword;
+        int hasword;//有无单词，0无，1有
         int count = 0;//统计单词数
         BufferedReader buttferedReader = null;
         try {
         	buttferedReader = new BufferedReader(new FileReader(file));
             String tempString = null;
-            String whole = buttferedReader.readLine();
+            String whole = buttferedReader.readLine();//把整个文件读到whole字符串里，对whole进行操作
             // 一次读入一行，直到读入null为文件结束
             while ((tempString = buttferedReader.readLine()) != null) {
                 whole = whole +'\n'+ tempString;
             }
             for(int i = 0;i<whole.length();i++) {
             	hasword = 0;
+            	//读到有效字符，添加到word中
             	if(whole.charAt(i)!=' ' && whole.charAt(i)!='\r' && whole.charAt(i)!='\n' && whole.charAt(i)!='\t' && whole.charAt(i)!=',') {
             		word += whole.charAt(i);
             	}
+            	//读到分隔符
             	else {
+            		//循环读
             		while(whole.charAt(i)==' ' || whole.charAt(i)=='\r' || whole.charAt(i)=='\n' || whole.charAt(i)=='\t' || whole.charAt(i)==',') {
             			if(!word.isEmpty()) {
+            				//如果word不为空则把word拿去和stopList比较
             				hasword = 1;
             				for(int j = 0;j<stopList.size();j++) {
             					if(word.equals(stopList.get(j))) {
             						hasword = 0;
             					}
             				}
+            				//比完把word置空
             				word = "";
             			}
             			i++;
             		}
+            		//和读单词数中同样的道理
             		if(whole.charAt(i)!=' ' && whole.charAt(i)!='\r' && whole.charAt(i)!='\n' && whole.charAt(i)!='\t' && whole.charAt(i)!=',') {
             			i--;
             		}
