@@ -1,22 +1,5 @@
-test()
+int main()
 {
-File writename = new File(outputPath);
-	writename.createNewFile();
-codeLine*/
-
-	BufferedWriter out = new BufferedWriter(new FileWriter(writername));
-//noteLine
-	out.write(outputBuffer);
-
-/*noteLine
-/*noteLine
-*/
-/*noteLine*/
-/*noteLine
-//noteLine
-*/codeLine
-	out.flush();
-	out.close();
-}//noteLine
-for(){
-}/*noteLine*/
+	printf("hello world!);
+	return 0;
+}
