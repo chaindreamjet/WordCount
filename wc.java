@@ -304,6 +304,19 @@ public class wc {
             	//读到有效字符，添加到word中
             	if(whole.charAt(i)!=' ' && whole.charAt(i)!='\r' && whole.charAt(i)!='\n' && whole.charAt(i)!='\t' && whole.charAt(i)!=',') {
             		word += whole.charAt(i);
+            		if(i==whole.length()-1) {
+            			if(!word.isEmpty()) {
+            				//如果word不为空则把word拿去和stopList比较
+            				hasword = 1;
+            				for(int j = 0;j<stopList.size();j++) {
+            					if(word.equals(stopList.get(j))) {
+            						hasword = 0;
+            					}
+            				}
+            				//比完把word置空
+            				word = "";
+            			}
+            		}
             	}
             	//读到分隔符
             	else {
@@ -344,42 +357,9 @@ public class wc {
         return str;
     }
     
-    //获取menupath目录下文件的扩展名为extension的所有文件 返回一个文件路径数组
-    public static ArrayList<String> menu(String menupath, String extension){
-    	ArrayList<String> filePathList=new ArrayList<>();
-    	File file=new File(menupath);
-    	File[] files=file.listFiles();
-    	if(files==null)
-        {
-            if(file.isFile())
-                filePathList.add(menupath);
-            else
-                return null;
-        }
-        for(File f:files)
-        {
-            if(f.isFile())
-            {
-                String curFileName=f.getName();
-                String regex=extension.replace("?","[0-9a-z]");
-                regex=regex.replace("*","[0-9a-z]{0,}"); //正则匹配
-                if(f.getName().matches(regex))
-                    filePathList.add(f.getAbsolutePath());
-            }
-            else if(f.isDirectory())
-            {
-                ArrayList<String> subDirectoryFiles=menu(f.getAbsolutePath(),extension);
-                filePathList.addAll(subDirectoryFiles);
-            }
-        }
-    	return filePathList;
-    }
-    
-    
     public static void main(String args[]){
     	
     	//循环处理文件
-    	String inpath = "";
     	String outpath = "";
     	String stoppath = "";
     	String extension = "";//要匹配的文件扩展名
@@ -434,81 +414,46 @@ public class wc {
     		}
     		else{
     			if(func[5]) {
-    				if(i==(args.length-1) || args[i+1].equals("-e") || args[i+1].equals("-o")) {
-    					inpath = System.getProperty("user.dir");
-    					extension = args[i];
-    				}
-    				else {
-    					inpath = args[i];
-    					extension = args[++i];
+    				while(i<(args.length)) {
+    					if(args[i].equals("-e") || args[i].equals("-o")) {
+    						i--;
+    						break;
+    					}
+    					filePathList.add(args[i++]);
     				}
     			}
     			else {
-    				inpath = args[i];
+    				filePathList.add(args[i]);
     			}
     		}
     	}
     	
     	//实现程序功能
-    	if(func[5]) {
-    		filePathList = menu(inpath,extension);
-    		for(int i = 0;i<filePathList.size();i++) {
-    			if(func[0]){
-    	    		//-c
-    	    		output += fileChars(filePathList.get(i));
-    	    	}
-    			if(func[4]){
-    	    		//-e
-    	            output += stopWords(filePathList.get(i),stoppath);
-    	    	}
-    			else if(func[1]){
-    	    		//-w
-    	    		output += fileWords(filePathList.get(i));
-    	    	}
-    	    	if(func[2]){
-    	    		//-l
-    	    		output += fileLines(filePathList.get(i));
-    	    	}
-    	    	if(func[3]){
-    	    		//-a
-    	    		output += fileMoreLines(filePathList.get(i));
-    	    	}
-    	    	
-    	        if(func[6]){
-    	           	outPut(output,outpath);
-    	        }
-    		}
+    	for(int i = 0;i<filePathList.size();i++) {
+    		if(func[0]){
+    	   		//-c
+    	  		output += fileChars(filePathList.get(i));
+    	   	}
+    		if(func[4]){
+    	   	//-e
+    	        output += stopWords(filePathList.get(i),stoppath);
+    	   	}
+    		else if(func[1]){
+    	   		//-w
+    	   		output += fileWords(filePathList.get(i));
+    	   	}
+    	   	if(func[2]){
+    	   		//-l
+    	    	output += fileLines(filePathList.get(i));
+    	   	}
+    	   	if(func[3]){
+    	    	//-a
+    	    	output += fileMoreLines(filePathList.get(i));
+    	    }
     	}
-    	else {
-	    	if(func[0]){
-	    		//-c
-	    		output += fileChars(inpath);
-	    	}
-	    	if(func[1]){
-	    		//-w
-	    		output += fileWords(inpath);
-	    	}
-	    	if(func[2]){
-	    		//-l
-	    		output += fileLines(inpath);
-	    	}
-	    	if(func[3]){
-	    		//-a
-	    		output += fileMoreLines(inpath);
-	    	}
-	    	if(func[4]){
-	    		//-e
-	            output += stopWords(inpath,stoppath);
-	    	}
-	        if(func[6]){
-	        	//-o
-	           	outPut(output,outpath);
-	        }
-	        //如果没有指定输出文件，则输出到result.txt
-	        else {
-	        	outPut(output,"result.txt");
-	        }
-    	}
+    	if(func[6]){
+	       	outPut(output,outpath);
+	    }
     	System.out.println(output);
     }
 }
